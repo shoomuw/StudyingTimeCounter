@@ -12,7 +12,10 @@ public class GUI extends Frame implements Runnable{
      * @param height 高さ
      * @param width 幅
      */
-    public GUI(int height, int width){
+    public GUI(int width, int height){
+        setSize(width, height);
+    }
+    public void run(){
 
     }
 }
