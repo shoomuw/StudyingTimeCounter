@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
-public class GUI extends Frame implements Runnable{
+public abstract class GUI extends Frame implements Runnable{
     /** スレッド */
     private Thread time;
 
@@ -15,7 +15,5 @@ public class GUI extends Frame implements Runnable{
     public GUI(int width, int height){
         setSize(width, height);
     }
-    public void run(){
-
-    }
+    public abstract void run();
 }
