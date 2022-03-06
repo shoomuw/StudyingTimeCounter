@@ -22,6 +22,12 @@ public class StopWatch extends GUI implements Runnable{
     /** 時 */
     private int h;
 
+    /** 裏画面 */
+    private Image iBuffer;
+    private Graphics gOffscreen;
+    private int width = 600;
+    private int height = 400;
+
     /**
      * コンストラクタ
      * @param width 幅
@@ -33,20 +39,31 @@ public class StopWatch extends GUI implements Runnable{
         h=0;
         date = Calendar.getInstance();
         sdf = new SimpleDateFormat("開始:yyyy/MM/dd hh:mm:ss");
-        setSize(600, 400);
+        setSize(width, height);
         setFont(new Font("Meiryo", Font.PLAIN, 25));
+    }
+    public void init(){
+        iBuffer = createImage(width, height);
+        gOffscreen = iBuffer.getGraphics();
     }
 
     public void paint(Graphics g){
-        g.drawString(sdf.format(date.getTime()), 100, 100);
-        String str = String.format("%02d", h)
-            +":"+String.format("%02d", m)
-            +":"+String.format("%02d", s);
-        g.drawString(str, 200, 200);
+        if(gOffscreen != null){
+            gOffscreen.clearRect(0, 0, width, height);
+
+            gOffscreen.drawString(sdf.format(date.getTime()), 100, 100);
+            String str = String.format("%02d", h)
+                +":"+String.format("%02d", m)
+                +":"+String.format("%02d", s);
+            gOffscreen.drawString(str, 200, 200);
+        }
+        g.drawImage(iBuffer, 0, 0, this);
     }
+
     public void start(){
         if(thread == null){
             thread = new Thread(this, "clock");
+            gOffscreen.drawRect(0, 0, width, height);
             thread.start();
         }
     }
@@ -67,7 +84,13 @@ public class StopWatch extends GUI implements Runnable{
             }
         }
     }
-    
+
+    public void update(Graphics g){
+        paint(g);
+    }
+
+
+
     private void countUp(){
         s++;
         if(s>59){
