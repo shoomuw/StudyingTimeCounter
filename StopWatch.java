@@ -16,11 +16,11 @@ public class StopWatch extends GUI implements Runnable{
     SimpleDateFormat sdf;
 
     /** 秒 */
-    private int s = 0;
+    private int s;
     /** 分 */
-    private int m = 0;
+    private int m;
     /** 時 */
-    private int h = 0;
+    private int h;
 
     /**
      * コンストラクタ
@@ -28,11 +28,13 @@ public class StopWatch extends GUI implements Runnable{
      * @param height 高さ
      */
     public StopWatch(){
-        
+        s=0; 
+        m=0; 
+        h=0;
         date = Calendar.getInstance();
         sdf = new SimpleDateFormat("開始:yyyy/MM/dd hh:mm:ss");
         setSize(600, 400);
-        setFont(new Font("Monospaced", Font.BOLD, 36));
+        setFont(new Font("Meiryo", Font.PLAIN, 25));
     }
 
     public void paint(Graphics g){
@@ -56,9 +58,9 @@ public class StopWatch extends GUI implements Runnable{
     public void run(){
         while(Thread.currentThread()==thread){
             repaint();
-            countUp();
             try{
                 Thread.sleep(1000);
+                countUp();
             }
             catch(InterruptedException e){
 
