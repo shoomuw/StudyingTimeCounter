@@ -12,6 +12,5 @@ public class STC {
         );
         gui.setVisible(true);
         gui.init();
-        gui.start();
     }
 }

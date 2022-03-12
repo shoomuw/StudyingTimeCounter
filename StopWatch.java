@@ -1,12 +1,13 @@
 import java.io.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
 
 /**
  * ストップウォッチ画面
  */
-public class StopWatch extends GUI implements Runnable{
+public class StopWatch extends GUI implements Runnable, ActionListener{
 
     /** スレッド */
     private Thread thread = null;
@@ -28,6 +29,13 @@ public class StopWatch extends GUI implements Runnable{
     private int width = 600;
     private int height = 400;
 
+    /** ボタン群 */
+    private Button button= new Button("開始");
+    private Button resetB = new Button("リセット");
+
+    /** フラグ */
+    private boolean isStarted;
+
     /**
      * コンストラクタ
      * @param width 幅
@@ -37,10 +45,18 @@ public class StopWatch extends GUI implements Runnable{
         s=0; 
         m=0; 
         h=0;
+        setLayout(null);
         date = Calendar.getInstance();
         sdf = new SimpleDateFormat("開始:yyyy/MM/dd HH:mm:ss");
         setSize(width, height);
         setFont(new Font("Meiryo", Font.PLAIN, 25));
+        isStarted = false;
+        button.addActionListener(this);
+        button.setBounds(100, 300, 120, 40);
+        resetB.addActionListener(this);
+        resetB.setBounds(400, 300, 120, 40);
+        add(button);
+        add(resetB);
     }
     public void init(){
         iBuffer = createImage(width, height);
@@ -49,7 +65,7 @@ public class StopWatch extends GUI implements Runnable{
 
     public void paint(Graphics g){
         if(gOffscreen != null){
-            gOffscreen.clearRect(0, 0, width, height);
+            gOffscreen.clearRect(0, 0, width, height-100);
 
             gOffscreen.drawString(sdf.format(date.getTime()), 100, 100);
             String str = String.format("%02d", h)
@@ -61,7 +77,7 @@ public class StopWatch extends GUI implements Runnable{
     }
 
     public void start(){
-        if(thread == null){
+        if(thread == null && isStarted != false){
             thread = new Thread(this, "clock");
             gOffscreen.drawRect(0, 0, width, height);
             thread.start();
@@ -70,6 +86,7 @@ public class StopWatch extends GUI implements Runnable{
 
     public void stop(){
         thread = null;
+        isStarted = false;
     }
 
     public void run(){
@@ -78,6 +95,7 @@ public class StopWatch extends GUI implements Runnable{
             try{
                 Thread.sleep(1000);
                 countUp();
+                
             }
             catch(InterruptedException e){
 
@@ -89,8 +107,6 @@ public class StopWatch extends GUI implements Runnable{
         paint(g);
     }
 
-
-
     private void countUp(){
         s++;
         if(s>59){
@@ -101,5 +117,34 @@ public class StopWatch extends GUI implements Runnable{
             m=0;
             h++;
         }
+    }
+
+    public void actionPerformed(ActionEvent e){
+        Object source = e.getSource();
+        if(source==button){
+            if(isStarted == false){
+                isStarted = true;
+                button.setLabel("一時停止");
+                start();
+            }
+            else{
+                isStarted = false;
+                button.setLabel("開始");
+                stop();
+            }
+        }
+        if(source == resetB){
+            stop();
+            reset();
+            repaint();
+
+        }
+    }
+    public void reset(){
+        h=0;
+        m=0;
+        s=0;
+        button.setLabel("開始");
+        date = Calendar.getInstance();
     }
 }
