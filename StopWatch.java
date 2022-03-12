@@ -38,7 +38,7 @@ public class StopWatch extends GUI implements Runnable{
         m=0; 
         h=0;
         date = Calendar.getInstance();
-        sdf = new SimpleDateFormat("開始:yyyy/MM/dd hh:mm:ss");
+        sdf = new SimpleDateFormat("開始:yyyy/MM/dd HH:mm:ss");
         setSize(width, height);
         setFont(new Font("Meiryo", Font.PLAIN, 25));
     }
