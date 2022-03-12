@@ -23,6 +23,10 @@ public class StopWatch extends GUI implements Runnable, ActionListener{
     /** 時 */
     private int h;
 
+    /** 記録用文字列 */
+    private String timeStr;
+    private String dateStr;
+
     /** 裏画面 */
     private Image iBuffer;
     private Graphics gOffscreen;
@@ -30,7 +34,8 @@ public class StopWatch extends GUI implements Runnable, ActionListener{
     private int height = 400;
 
     /** ボタン群 */
-    private Button button= new Button("開始");
+    private Button button = new Button("開始");
+    private Button writeB = new Button("記録");
     private Button resetB = new Button("リセット");
 
     /** フラグ */
@@ -38,8 +43,6 @@ public class StopWatch extends GUI implements Runnable, ActionListener{
 
     /**
      * コンストラクタ
-     * @param width 幅
-     * @param height 高さ
      */
     public StopWatch(){
         s=0; 
@@ -53,11 +56,14 @@ public class StopWatch extends GUI implements Runnable, ActionListener{
         isStarted = false;
         button.addActionListener(this);
         button.setBounds(100, 300, 120, 40);
+        writeB.addActionListener(this);
+        writeB.setBounds(250, 300, 120, 40);
         resetB.addActionListener(this);
         resetB.setBounds(400, 300, 120, 40);
         add(button);
         add(resetB);
     }
+
     public void init(){
         iBuffer = createImage(width, height);
         gOffscreen = iBuffer.getGraphics();
@@ -94,8 +100,7 @@ public class StopWatch extends GUI implements Runnable, ActionListener{
             repaint();
             try{
                 Thread.sleep(1000);
-                countUp();
-                
+                countUp();  
             }
             catch(InterruptedException e){
 
@@ -125,11 +130,13 @@ public class StopWatch extends GUI implements Runnable, ActionListener{
             if(isStarted == false){
                 isStarted = true;
                 button.setLabel("一時停止");
+                remove(writeB);
                 start();
             }
             else{
                 isStarted = false;
                 button.setLabel("開始");
+                add(writeB);
                 stop();
             }
         }
@@ -137,14 +144,52 @@ public class StopWatch extends GUI implements Runnable, ActionListener{
             stop();
             reset();
             repaint();
-
+        }
+        if(source == writeB){
+            writeFile();
+            remove(button);
+            remove(writeB);
         }
     }
+
     public void reset(){
         h=0;
         m=0;
         s=0;
         button.setLabel("開始");
+        add(button);
+        remove(writeB);
         date = Calendar.getInstance();
+    }
+
+    public void writeFile(){
+        FileWriter fw;
+        File file = new File("rec.csv");
+        SimpleDateFormat f = new SimpleDateFormat("yyyy,MM,dd,HH,mm,ss,");
+        dateStr = f.format(date.getTime());
+        timeStr = Integer.toString(h)+","
+                + Integer.toString(m)+","
+                + Integer.toString(s);
+        try{
+
+            if(file.createNewFile()){
+                if(!file.canWrite()){
+                    file.setWritable(true);
+                }
+
+                fw = new FileWriter(file, true);
+
+                fw.write(dateStr+timeStr+"\n");
+                fw.close();
+            }
+            else{
+                fw = new FileWriter(file, true);
+                fw.write(dateStr+timeStr+"\n");
+                fw.close();
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
