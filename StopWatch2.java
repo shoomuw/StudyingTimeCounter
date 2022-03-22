@@ -59,7 +59,7 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
         startTime.setFont(new Font("Meiryo", Font.PLAIN, 25));
         startTime.setText("スタートを押して開始");
         setSize(width, height);
-        timeField.setFont(new Font("Meiryo", Font.PLAIN, 70));
+        timeField.setFont(new Font("Meiryo", Font.PLAIN, 100));
         isStarted = false;
         add(startTime, BorderLayout.NORTH);
         add(timeField, BorderLayout.CENTER);
