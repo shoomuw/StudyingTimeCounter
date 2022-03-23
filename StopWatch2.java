@@ -136,12 +136,14 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
                 isStarted = true;
                 button.setLabel("一時停止");
                 writeB.setEnabled(false);
+                resetB.setEnabled(false);
                 start();
             }
             else{
                 isStarted = false;
                 button.setLabel("再開");
                 writeB.setEnabled(true);
+                resetB.setEnabled(true);
                 stop();
             }
         }
