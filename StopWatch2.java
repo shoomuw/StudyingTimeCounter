@@ -38,7 +38,7 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
 
     /** ボタン群 */
     private Panel buttonP = new Panel();
-    private Button button = new Button("開始");
+    private Button button = new Button("スタート");
     private Button writeB = new Button("記録");
     private Button resetB = new Button("リセット");
 
@@ -52,13 +52,15 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
         s=0; 
         m=0; 
         h=0;
+        setTitle("STC");
         setLayout(new BorderLayout());
         buttonP.setLayout(new GridLayout(1, 3));
-        date = Calendar.getInstance();
         sdf = new SimpleDateFormat("開始:yyyy/MM/dd HH:mm:ss");
+        startTime.setEditable(false);
         startTime.setFont(new Font("Meiryo", Font.PLAIN, 25));
         startTime.setText("スタートを押して開始");
         setSize(width, height);
+        timeField.setEditable(false);
         timeField.setFont(new Font("Meiryo", Font.PLAIN, 100));
         isStarted = false;
         add(startTime, BorderLayout.NORTH);
@@ -69,6 +71,7 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
         writeB.setEnabled(false);
         //writeB.setBounds(250, 300, 120, 40);
         resetB.addActionListener(this);
+        resetB.setEnabled(false);
         //resetB.setBounds(400, 300, 120, 40);
         buttonP.add(button);
         buttonP.add(resetB);
@@ -87,6 +90,7 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
         if(thread == null && isStarted != false){
             thread = new Thread(this, "clock");
             thread.start();
+            date = Calendar.getInstance();
             startTime.setText(sdf.format(date.getTime()));
         }
     }
@@ -136,7 +140,7 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
             }
             else{
                 isStarted = false;
-                button.setLabel("開始");
+                button.setLabel("再開");
                 writeB.setEnabled(true);
                 stop();
             }
@@ -148,7 +152,9 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
         }
         if(source == writeB){
             writeFile();
+            reset();
             writeB.setEnabled(false);
+            button.setLabel("スタート");
         }
     }
 
@@ -156,10 +162,12 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
         h=0;
         m=0;
         s=0;
-        button.setLabel("開始");
+        button.setLabel("スタート");
+        resetB.setEnabled(false);
         writeB.setEnabled(false);
         startTime.setText("スタートを押して開始");
         date = Calendar.getInstance();
+        repaint();
     }
 
     public void writeFile(){
