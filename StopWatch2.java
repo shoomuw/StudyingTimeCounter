@@ -24,6 +24,11 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
     /** 時 */
     private int h;
 
+    /** 1フレームの経過時間 */
+    private long time;
+    private long f_start;
+    private long f_end;
+
     private int width = 600;
     private int height = 400;
 
@@ -43,7 +48,8 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
     private Button resetB = new Button("リセット");
 
     /** フラグ */
-    private boolean isStarted;
+    private boolean isStart;
+    private boolean isDefault;
 
     /**
      * コンストラクタ
@@ -62,7 +68,8 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
         setSize(width, height);
         timeField.setEditable(false);
         timeField.setFont(new Font("Meiryo", Font.PLAIN, 100));
-        isStarted = false;
+        isStart = false;
+        isDefault = true;
         add(startTime, BorderLayout.NORTH);
         add(timeField, BorderLayout.CENTER);
         button.addActionListener(this);
@@ -87,27 +94,42 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
     }
 
     public void start(){
-        if(thread == null && isStarted != false){
+        if(thread == null && isStart && isDefault){
             thread = new Thread(this, "clock");
             thread.start();
             date = Calendar.getInstance();
             startTime.setText(sdf.format(date.getTime()));
+            f_start = System.currentTimeMillis();
+            time = 0;
+            isDefault = false;
         }
     }
 
+    public void restart(){
+        if(thread == null && isStart && !isDefault){
+            thread = new Thread(this, "clock");
+            thread.start();
+            f_start = System.currentTimeMillis();
+        }
+    }
     public void stop(){
         thread = null;
-        isStarted = false;
+        isStart = false;
     }
 
     public void run(){
         while(Thread.currentThread()==thread){
             repaint();
             try{
-                Thread.sleep(1000);
-                countUp();  
+                f_end = System.currentTimeMillis();
+                time = (f_end - f_start);
+                if(time >= 1000.0){
+                    time = 0;
+                    f_start = System.currentTimeMillis();
+                    countUp();
+                }  
             }
-            catch(InterruptedException e){
+            catch(Exception e){
 
             }
         }
@@ -132,15 +154,24 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
     public void actionPerformed(ActionEvent e){
         Object source = e.getSource();
         if(source==button){
-            if(isStarted == false){
-                isStarted = true;
-                button.setLabel("一時停止");
-                writeB.setEnabled(false);
-                resetB.setEnabled(false);
-                start();
+            if(!isStart){
+                if(isDefault){
+                    isStart = true;
+                    button.setLabel("一時停止");
+                    writeB.setEnabled(false);
+                    resetB.setEnabled(false);
+                    start();
+                }
+                else{
+                    isStart = true;
+                    button.setLabel("一時停止");
+                    writeB.setEnabled(false);
+                    resetB.setEnabled(false);
+                    restart();
+                }
             }
             else{
-                isStarted = false;
+                isStart = false;
                 button.setLabel("再開");
                 writeB.setEnabled(true);
                 resetB.setEnabled(true);
@@ -164,6 +195,7 @@ public class StopWatch2 extends GUI implements Runnable, ActionListener{
         h=0;
         m=0;
         s=0;
+        isDefault = true;
         button.setLabel("スタート");
         resetB.setEnabled(false);
         writeB.setEnabled(false);
